@@ -4,10 +4,11 @@
 
 Game::Game()
 	:
-	window(sf::VideoMode(1280, 720), "gierka", sf::Style::Close),
+	WINDOW_SIZE({ 1280, 720}),
+	window(sf::VideoMode(WINDOW_SIZE.x, WINDOW_SIZE.y, 32), "gierka", sf::Style::Close),
 	currentStatePtr(&loadingState)
 {
-
+	currentStatePtr->init();
 }
 
 Game::~Game()
@@ -20,15 +21,17 @@ Game::~Game()
 
 void Game::run()
 {
-	currentStatePtr = &mainMenuState;
+	
+	currentStatePtr = &menuState; //start with menu
+	currentStatePtr->init();
 
 	sf::Clock gameClock;
 	float deltaTime = 1 / 60.f;
+
 	
 	while (getStatePtr() != &quitState) //main loop
 	{
-		window.clear();
-		currentStatePtr->draw();
+		float frameStartTime = gameClock.getElapsedTime().asSeconds();
 		
 		sf::Event event;
 		while (window.pollEvent(event)) //event loop
@@ -36,10 +39,13 @@ void Game::run()
 			if (event.type == sf::Event::Closed)
 				currentStatePtr = &quitState;
 				
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::P) && currentStatePtr == &inGameState) // we don't want to pause, if player is in menu
-				currentStatePtr = &pauseState;
 		} 
-
+		
+		window.clear();
+		currentStatePtr->draw();
+		currentStatePtr->update();
 		window.display();
+
+		deltaTime = gameClock.getElapsedTime().asSeconds() - frameStartTime;
 	}
 }

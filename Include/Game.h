@@ -3,16 +3,33 @@
 
 //states
 #include "State\GameState.h"
-#include "State\InGameState.h"
-#include "State\LoadingState.h"
-#include "State\MainMenuState.h"
-#include "State\QuitState.h"
-#include "State\PauseState.h"
+#include "State\SPlaying.h"
+#include "State\SLoading.h"
+#include "State\SMenu.h"
+#include "State\SQuit.h"
+#include "State\SPause.h"
 
+#include "TextureManager.h"
 #include <iostream>
 
 class Game
 {
+
+public:
+	inline static Game& getInstance()
+	{
+		static Game instance;
+		return instance;
+	}
+
+	inline GameState *getStatePtr() const { return currentStatePtr; };
+	inline sf::RenderWindow& getWindow() { return window; };
+	inline const sf::Vector2u getWindowSize() const { return WINDOW_SIZE; };
+	
+	void run();
+
+private:
+
 	Game();
 	Game(const Game &) = delete;
 	Game& operator=(const Game&) = delete;
@@ -20,24 +37,13 @@ class Game
 
 	GameState *currentStatePtr;
 
-	InGameState inGameState;
-	LoadingState loadingState;
-	MainMenuState mainMenuState;
-	QuitState quitState;
-	PauseState pauseState;
-	
-	
+	SPlaying playingState;
+	SLoading loadingState;
+	SMenu menuState;
+	SQuit quitState;
+	SPause pauseState;
 
-public:
-	static Game& getInstance()
-	{
-		static Game instance;
-		return instance;
-	}
-
-	inline GameState *getStatePtr() { return currentStatePtr; };
-
-	void run();
-
+	const sf::Vector2u WINDOW_SIZE;
 	sf::RenderWindow window;
+	
 };
